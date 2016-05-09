@@ -17,11 +17,10 @@ Mix [auth0/angular-jwt](https://github.com/auth0/angular-jwt) & [witoldsz/angula
 You can override the `credentialsService` methods.
 
 ```js
-angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials'])
+angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'LocalStorageModule'])
 .config(function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
 
   // Please note we're annotating the function so that the $injector works when the file is minified
-
   credentialsServiceProvider.saveToken = ['localStorageService', function(localStorageService) {
      // "this" is set by $injector, https://docs.angularjs.org/api/auto/service/$injector
     localStorageService.set('auth.jwt_token', this);
