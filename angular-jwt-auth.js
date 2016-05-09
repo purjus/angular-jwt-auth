@@ -59,6 +59,10 @@
 
       var credentials = $injector.invoke(credentialsService.retrieve);
 
+      if (credentials === null) {
+        return config;
+      }
+
       AuthResourceService.login({_username: credentials.username, _password: credentials.password}).$promise.then(function(data) {
 
         var token = data.token
@@ -78,27 +82,14 @@
 
   })
 
-  .run(function($injector, $rootScope, $state, config, $ionicHistory, $ionicPopup, credentialsService) {
+  .run(function($injector, $rootScope, credentialsService) {
 
     $rootScope.$on('event:auth-loginConfirmed', function(event, token) {
       $injector.invoke(credentialsService.saveToken, token);
     });
 
     $rootScope.$on('event:auth-loginCancelled', function(event) {
-
       $injector.invoke(credentialsService.removeToken);
-
-      $ionicPopup.alert({
-          title: 'Unauthorized',
-          template: 'Authentication is required'
-      });
-
-      $ionicHistory.nextViewOptions({
-        disableBack: true
-      });
-
-      $state.go(config.stateGuest);
-
     });
 
   })
