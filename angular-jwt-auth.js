@@ -30,29 +30,43 @@
   angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service', 'LocalStorageModule'])
   .config(function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
 
-    jwtInterceptorProvider.tokenGetter = ['$injector', 'jwtHelper', '$http', 'localStorageService', function($injector, jwtHelper, $http, localStorageService) {
+    jwtInterceptorProvider.tokenGetter = ['$injector', 'config', 'jwtHelper', '$http', 'localStorageService', function($injector, config, jwtHelper, $http, localStorageService) {
+
+      if (config.url.substr(config.url.length - 5) == '.html') {
+        return null;
+      }
 
       var token = localStorageService.get('auth.jwt_token');
       var refreshToken = localStorageService.get('auth.jwt_refresh_token');
 
-      if (jwtHelper.isTokenExpired(token)) {
+      // We got a expired token
+      if (token !== null && jwtHelper.isTokenExpired(token)) {
 
-        // This is a promise of a JWT id_token
+        // This is a promise of a JWT token
         return $http({
           url: credentialsServiceProvider.urlTokenRefresh,
           // This makes it so that this request doesn't send the JWT
           skipAuthorization: true,
+          ignoreAuthModule: true,
           method: 'POST',
           data: {
               refresh_token: refreshToken
           }
         }).then(function(response) {
+
           var data = response.data;
           $injector.invoke(credentialsServiceProvider.tokenSave, data);
           return data.token;
+
+        }, function() {
+
+          // If the refresh didn't succeed (ie. refresh_token have been deleted in DB), return null so authService can work
+          return null;
+
         });
 
       } else {
+
         return token;
       }
 
@@ -77,13 +91,15 @@
     }];
 
     credentialsServiceProvider.tokenRetrieve = ['$http', 'WsService', function($http, WsService) {
-      return $http.post(credentialsServiceProvider.urlLoginCheck, this, {ignoreAuthModule: true, headers: {'Content-Type': 'application/x-www-form-urlencoded'}, transformRequest: WsService.objectToURLEncoded});
+      // We don't send Authorization headers
+      return $http.post(credentialsServiceProvider.urlLoginCheck, this, {ignoreAuthModule: true, skipAuthorization: true, headers: {'Content-Type': 'application/x-www-form-urlencoded'}, transformRequest: WsService.objectToURLEncoded});
     }];
 
   })
 
   .run(function($injector, $rootScope, authService, credentialsService, jwtInterceptor) {
 
+    // ...
     credentialsService.easyLogin = function(username, password) {
       return $injector.invoke(credentialsService.tokenRetrieve, {_username: username, _password: password});
     }
@@ -106,15 +122,25 @@
           return config ;
         });
 
-        $injector.invoke(credentialsService.tokenSave, data);
-
       }, function(error) {
         authService.loginCancelled();
-        $injector.invoke(credentialsService.tokenRemove);
       });
 
     });
 
   })
+
+  .run(function($injector, $rootScope, credentialsService) {
+
+    $rootScope.$on('event:auth-loginConfirmed', function(event, token) {
+      $injector.invoke(credentialsService.tokenSave, token);
+    });
+
+    $rootScope.$on('event:auth-loginCancelled', function(event) {
+      $injector.invoke(credentialsService.tokenRemove);
+    });
+
+  })
+
 
 })();
