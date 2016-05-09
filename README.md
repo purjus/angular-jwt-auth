@@ -3,6 +3,15 @@ Mix [auth0/angular-jwt](https://github.com/auth0/angular-jwt) & [witoldsz/angula
 
 ## Documentation
 
+### Set the login_check URL
+
+```js
+// app.js
+.config(function(credentialsServiceProvider) {
+  credentialsServiceProvider.urlLoginCheck = '/login_check';
+})
+```
+
 ### Custom methods
 
 You can override the `credentialsService` methods.
@@ -14,7 +23,8 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
   // Please note we're annotating the function so that the $injector works when the file is minified
 
   credentialsServiceProvider.saveToken = ['localStorageService', function(localStorageService) {
-    localStorageService.set('auth.jwt_token', this); // "this" is set by $injector, https://docs.angularjs.org/api/auto/service/$injector
+     // "this" is set by $injector, https://docs.angularjs.org/api/auto/service/$injector
+    localStorageService.set('auth.jwt_token', this);
   }];
 
 });
