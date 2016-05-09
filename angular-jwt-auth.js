@@ -24,7 +24,7 @@
 
   })
 
-  angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service'])
+  angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service', 'LocalStorageModule'])
   .config(function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
 
     jwtInterceptorProvider.tokenGetter = ['localStorageService', function(localStorageService) {
@@ -73,28 +73,18 @@
         var token = response.data.token;
 
         // Add Authorization header to current requests
-        // loginConfirmed() will dispatch an event with the token & we will save it with a listener
         authService.loginConfirmed(token, function(config) {
           config.headers.Authorization = 'Bearer ' + token;
           return config ;
         });
 
+        $injector.invoke(credentialsService.tokenSave, token);
+
       }, function(error) {
         authService.loginCancelled();
+        $injector.invoke(credentialsService.tokenRemove);
       });
 
-    });
-
-  })
-
-  .run(function($injector, $rootScope, credentialsService) {
-
-    $rootScope.$on('event:auth-loginConfirmed', function(event, token) {
-      $injector.invoke(credentialsService.tokenSave, token);
-    });
-
-    $rootScope.$on('event:auth-loginCancelled', function(event) {
-      $injector.invoke(credentialsService.tokenRemove);
     });
 
   })
