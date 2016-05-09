@@ -5,29 +5,26 @@
   angular.module('angular-jwt-auth.credentials', [])
   .provider('credentialsService', function() {
 
-    this.retrieve = function() {
-      return null;
-    };
+    this.credentialsRetrieve = function() { return null; };
 
-    this.saveToken = function(token) {
-      return;
-    }
+    this.tokenRetrieve = function(credentials) { return null; };
 
-    this.removeToken = function(token) {
-      return;
-    }
+    this.tokenSave = function(token) {};
+
+    this.tokenRemove = function(token) {};
 
     this.$get = function() {
       return {
-        retrieve: this.retrieve,
-        saveToken: this.saveToken,
-        removeToken: this.removeToken
+        credentialsRetrieve: this.credentialsRetrieve,
+        tokenRetrieve: this.tokenRetrieve,
+        tokenSave: this.tokenSave,
+        tokenRemove: this.tokenRemove
       }
     };
 
-  });
+  })
 
-  angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials'])
+  angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service'])
   .config(function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
 
     jwtInterceptorProvider.tokenGetter = ['localStorageService', function(localStorageService) {
@@ -36,36 +33,44 @@
 
     $httpProvider.interceptors.push('jwtInterceptor');
 
-    credentialsServiceProvider.retrieve = ['localStorageService', function(localStorageService) {
+    credentialsServiceProvider.credentialsRetrieve = ['localStorageService', function(localStorageService) {
       return {
         username: localStorageService.get('auth.username'),
         password: localStorageService.get('auth.password')
       }
     }];
 
-    credentialsServiceProvider.saveToken = ['localStorageService', function(localStorageService) {
-      localStorageService.set('auth.jwt_token', this); // this is set by $injector, https://docs.angularjs.org/api/auto/service/$injector
+    credentialsServiceProvider.tokenSave = ['localStorageService', function(localStorageService) {
+      localStorageService.set('auth.jwt_token', this);
     }];
 
-    credentialsServiceProvider.removeToken = ['localStorageService', function(localStorageService) {
+    credentialsServiceProvider.tokenRemove = ['localStorageService', function(localStorageService) {
       localStorageService.remove('auth.jwt_token');
+    }];
+
+    credentialsServiceProvider.tokenRetrieve = ['$http', 'WsService', function($http, WsService) {
+      return $http.post(credentialsServiceProvider.urlLoginCheck, this, {ignoreAuthModule: true, headers: {'Content-Type': 'application/x-www-form-urlencoded'}, transformRequest: WsService.objectToURLEncoded});
     }];
 
   })
 
-  .run(function($injector, $rootScope, AuthResourceService, authService, credentialsService, jwtInterceptor) {
+  .run(function($injector, $rootScope, authService, credentialsService, jwtInterceptor) {
+
+    credentialsService.easyLogin = function(username, password) {
+      return $injector.invoke(credentialsService.tokenRetrieve, {_username: username, _password: password});
+    }
 
     $rootScope.$on('event:auth-loginRequired', function(rejection) {
 
-      var credentials = $injector.invoke(credentialsService.retrieve);
+      var credentials = $injector.invoke(credentialsService.credentialsRetrieve);
 
       if (credentials === null) {
         return config;
       }
 
-      AuthResourceService.login({_username: credentials.username, _password: credentials.password}).$promise.then(function(data) {
+      $injector.invoke(credentialsService.tokenRetrieve, {_username: credentials.username, _password: credentials.password}).then(function(response) {
 
-        var token = data.token
+        var token = response.data.token;
 
         // Add Authorization header to current requests
         // loginConfirmed() will dispatch an event with the token & we will save it with a listener
@@ -85,11 +90,11 @@
   .run(function($injector, $rootScope, credentialsService) {
 
     $rootScope.$on('event:auth-loginConfirmed', function(event, token) {
-      $injector.invoke(credentialsService.saveToken, token);
+      $injector.invoke(credentialsService.tokenSave, token);
     });
 
     $rootScope.$on('event:auth-loginCancelled', function(event) {
-      $injector.invoke(credentialsService.removeToken);
+      $injector.invoke(credentialsService.tokenRemove);
     });
 
   })
