@@ -12,9 +12,9 @@
 
     this.tokenRetriever = function(credentials) { return null; };
 
-    this.tokenSaver = function(token) {};
+    this.tokenSaver = function(token) { return null; };
 
-    this.tokenRemover = function(token) {};
+    this.tokenRemover = function(token) { return null; };
 
     this.$get = function() {
       return {
@@ -22,10 +22,10 @@
         tokenRetriever: this.tokenRetriever,
         tokenSaver: this.tokenSaver,
         tokenRemover: this.tokenRemover
-      }
+      };
     };
 
-  })
+  });
 
   angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service', 'LocalStorageModule'])
   .config(function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
@@ -66,7 +66,6 @@
         });
 
       } else {
-
         return token;
       }
 
@@ -78,7 +77,7 @@
       return {
         username: localStorageService.get('auth.username'),
         password: localStorageService.get('auth.password')
-      }
+      };
     }];
 
     credentialsServiceProvider.tokenSaver = ['localStorageService', function(localStorageService) {
@@ -135,7 +134,6 @@
       $injector.invoke(credentialsService.tokenRemover);
     });
 
-  })
-
+  });
 
 })();
