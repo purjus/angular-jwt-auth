@@ -36,7 +36,7 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
       });
 
     } else {
-      return token;
+      return existingToken.token;
     }
 
   }];
