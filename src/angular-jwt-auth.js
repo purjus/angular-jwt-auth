@@ -1,86 +1,86 @@
 angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service', 'LocalStorageModule'])
 .config(function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
 
-  jwtInterceptorProvider.tokenGetter = ['$injector', 'config', 'jwtHelper', '$http', 'localStorageService', function($injector, config, jwtHelper, $http, localStorageService) {
+    jwtInterceptorProvider.tokenGetter = ['$injector', 'config', 'jwtHelper', '$http', function($injector, config, jwtHelper, $http) {
 
-    if (config.url.substr(config.url.length - 5) == '.html') {
-      return null;
-    }
-
-    var existingToken = $injector.invoke(credentialsServiceProvider.existingTokenRetriever);
-
-    // We got a expired token
-    if (existingToken.token !== null && jwtHelper.isTokenExpired(existingToken.token)) {
-
-      // This is a promise of a JWT token
-      return $http({
-        url: credentialsServiceProvider.urlTokenRefresh,
-        // This makes it so that this request doesn't send the JWT
-        skipAuthorization: true,
-        ignoreAuthModule: true,
-        method: 'POST',
-        data: {
-            refresh_token: existingToken.refreshToken
+        if ('.html' === config.url.substr(config.url.length - 5)) {
+            return null;
         }
-      }).then(function(response) {
 
-        var data = response.data;
-        $injector.invoke(credentialsServiceProvider.tokenSaver, data);
-        return data.token;
+        var existingToken = $injector.invoke(credentialsServiceProvider.existingTokenRetriever);
 
-      }, function() {
+        // We got a expired token
+        if (existingToken.token !== null && jwtHelper.isTokenExpired(existingToken.token)) {
 
-        // If the refresh didn't succeed (ie. refresh_token have been deleted in DB), return null so authService can work
-        return null;
+            // This is a promise of a JWT token
+            return $http({
+                url: credentialsServiceProvider.urlTokenRefresh,
+                // This makes it so that this request doesn't send the JWT
+                skipAuthorization: true,
+                ignoreAuthModule: true,
+                method: 'POST',
+                data: {
+                    refresh_token: existingToken.refreshToken
+                }
+            }).then(function(response) {
 
-      });
+                var data = response.data;
+                $injector.invoke(credentialsServiceProvider.tokenSaver, data);
+                return data.token;
 
-    } else {
-      return existingToken.token;
-    }
+            }, function() {
 
-  }];
+                // If the refresh didn't succeed (ie. refresh_token have been deleted in DB), return null so authService can work
+                return null;
 
-  $httpProvider.interceptors.push('jwtInterceptor');
+            });
+
+        } else {
+            return existingToken.token;
+        }
+
+    }];
+
+    $httpProvider.interceptors.push('jwtInterceptor');
 
 })
 
-.run(function($injector, $rootScope, authService, credentialsService, jwtInterceptor) {
+.run(function($injector, $rootScope, authService, credentialsService) {
 
-  $rootScope.$on('event:auth-loginRequired', function(rejection) {
+    $rootScope.$on('event:auth-loginRequired', function() {
 
-    var credentials = $injector.invoke(credentialsService.credentialsRetriever);
+        var credentials = $injector.invoke(credentialsService.credentialsRetriever);
 
-    if (credentials === null) {
-      return config
-    }
+        if (credentials === null) {
+            return;
+        }
 
-    $injector.invoke(credentialsService.tokenRetriever, {_username: credentials.username, _password: credentials.password}).then(function(response) {
+        $injector.invoke(credentialsService.tokenRetriever, {_username: credentials.username, _password: credentials.password}).then(function(response) {
 
-      var data = response.data;
+            var data = response.data;
 
-      // Add Authorization header to current requests
-      authService.loginConfirmed(data, function(config) {
-        config.headers.Authorization = 'Bearer ' + data.token;
-        return config ;
-      });
+            // Add Authorization header to current requests
+            authService.loginConfirmed(data, function(config) {
+                config.headers.Authorization = 'Bearer ' + data.token;
+                return config ;
+            });
 
-    }, function(error) {
-      authService.loginCancelled();
+        }, function() {
+            authService.loginCancelled();
+        });
+
     });
-
-  });
 
 })
 
 .run(function($injector, $rootScope, credentialsService) {
 
-  $rootScope.$on('event:auth-loginConfirmed', function(event, token) {
-    $injector.invoke(credentialsService.tokenSaver, token);
-  });
+    $rootScope.$on('event:auth-loginConfirmed', function(event, token) {
+        $injector.invoke(credentialsService.tokenSaver, token);
+    });
 
-  $rootScope.$on('event:auth-loginCancelled', function(event) {
-    $injector.invoke(credentialsService.tokenRemover);
-  });
+    $rootScope.$on('event:auth-loginCancelled', function() {
+        $injector.invoke(credentialsService.tokenRemover);
+    });
 
 });
