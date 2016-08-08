@@ -9,7 +9,8 @@
     "rules": {
         "indent": [
             "error",
-            4
+            4,
+            {"SwitchCase": 1}
         ],
         "linebreak-style": [
             "error",
@@ -28,6 +29,26 @@
         ],
         "curly": [
             "error"
+        ],
+        "object-curly-spacing": [
+            "error",
+            "never"
+        ],
+        "array-bracket-spacing": [
+            "error",
+            "never"
+        ],
+        "space-in-parens": [
+            "error",
+            "never"
+        ],
+        "space-before-function-paren": [
+            "error",
+            "never"
+        ],
+        "space-before-blocks": [
+            "error",
+            "always"
         ],
         "eqeqeq": [
             "error",

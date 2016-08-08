@@ -3,7 +3,7 @@
 angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service', 'LocalStorageModule'])
 .config(["$httpProvider", "jwtInterceptorProvider", "credentialsServiceProvider", function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
 
-    jwtInterceptorProvider.tokenGetter = ['$injector', 'config', 'jwtHelper', '$http', function($injector, config, jwtHelper, $http) {
+    jwtInterceptorProvider.tokenGetter = ['$injector', 'config', 'jwtHelper', '$http', 'WsService', function($injector, config, jwtHelper, $http, WsService) {
 
         if ('.html' === config.url.substr(config.url.length - 5)) {
             return null;
@@ -19,6 +19,8 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
                 url: credentialsServiceProvider.urlTokenRefresh,
                 // This makes it so that this request doesn't send the JWT
                 skipAuthorization: true,
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                transformRequest: WsService.objectToURLEncoded,
                 ignoreAuthModule: true,
                 method: 'POST',
                 data: {
@@ -144,6 +146,11 @@ angular.module('angular-jwt-auth.credentials', [])
 .config(["credentialsServiceProvider", function(credentialsServiceProvider) {
 
     credentialsServiceProvider.credentialsRetriever = ['localStorageService', function(localStorageService) {
+
+        if (localStorage.getItem("auth.username") === null || localStorage.getItem("auth.password") === null) {
+            return null;
+        }
+
         return {
             username: localStorageService.get('auth.username'),
             password: localStorageService.get('auth.password')
