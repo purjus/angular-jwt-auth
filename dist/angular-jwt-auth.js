@@ -24,7 +24,7 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
                 ignoreAuthModule: true,
                 method: 'POST',
                 data: {
-                    refresh_token: existingToken.refreshToken
+                    'refresh_token': existingToken.refreshToken
                 }
             }).then(function(response) {
 
@@ -170,7 +170,7 @@ angular.module('angular-jwt-auth.credentials', [])
     }];
 
     credentialsServiceProvider.tokenRemover = ['localStorageService', function(localStorageService) {
-        localStorageService.remove('auth.jwt_token', 'auth.refresh_token');
+        localStorageService.remove('auth.jwt_token', 'auth.jwt_refresh_token');
     }];
 
     credentialsServiceProvider.tokenRetriever = ['$http', 'WsService', function($http, WsService) {

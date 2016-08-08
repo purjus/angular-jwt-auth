@@ -22,7 +22,7 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
                 ignoreAuthModule: true,
                 method: 'POST',
                 data: {
-                    refresh_token: existingToken.refreshToken
+                    'refresh_token': existingToken.refreshToken
                 }
             }).then(function(response) {
 

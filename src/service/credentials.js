@@ -79,7 +79,7 @@ angular.module('angular-jwt-auth.credentials', [])
     }];
 
     credentialsServiceProvider.tokenRemover = ['localStorageService', function(localStorageService) {
-        localStorageService.remove('auth.jwt_token', 'auth.refresh_token');
+        localStorageService.remove('auth.jwt_token', 'auth.jwt_refresh_token');
     }];
 
     credentialsServiceProvider.tokenRetriever = ['$http', 'WsService', function($http, WsService) {
