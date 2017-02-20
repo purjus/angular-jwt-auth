@@ -56,6 +56,7 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
         var credentials = $injector.invoke(credentialsService.credentialsRetriever);
 
         if (credentials === null) {
+            authService.loginCancelled();
             return;
         }
 
