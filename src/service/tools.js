@@ -1,5 +1,5 @@
-angular.module('angular-jwt-auth.credentials', [])
-.provider('credentialsService', function() {
+angular.module('angular-jwt-auth.tools', [])
+.provider('angularJwtAuthTools', function() {
 
     this.urlLoginCheck = '/login_check';
     this.urlTokenRefresh = '/token/refresh';
@@ -52,9 +52,9 @@ angular.module('angular-jwt-auth.credentials', [])
 
 })
 
-.config(function(credentialsServiceProvider) {
+.config(function(angularJwtAuthToolsProvider) {
 
-    credentialsServiceProvider.credentialsRetriever = ['localStorageService', function(localStorageService) {
+    angularJwtAuthToolsProvider.credentialsRetriever = ['localStorageService', function(localStorageService) {
 
         if (localStorage.getItem('auth.username') === null || localStorage.getItem('auth.password') === null) {
             return null;
@@ -66,25 +66,25 @@ angular.module('angular-jwt-auth.credentials', [])
         };
     }];
 
-    credentialsServiceProvider.tokenSaver = ['localStorageService', function(localStorageService) {
+    angularJwtAuthToolsProvider.tokenSaver = ['localStorageService', function(localStorageService) {
         localStorageService.set('auth.jwt_token', this.token);
         localStorageService.set('auth.jwt_refresh_token', this.refresh_token);
     }];
 
-    credentialsServiceProvider.existingTokenRetriever = ['localStorageService', function(localStorageService) {
+    angularJwtAuthToolsProvider.existingTokenRetriever = ['localStorageService', function(localStorageService) {
         return {
             token: localStorageService.get('auth.jwt_token'),
             refreshToken: localStorageService.get('auth.jwt_refresh_token')
         };
     }];
 
-    credentialsServiceProvider.tokenRemover = ['localStorageService', function(localStorageService) {
+    angularJwtAuthToolsProvider.tokenRemover = ['localStorageService', function(localStorageService) {
         localStorageService.remove('auth.jwt_token', 'auth.jwt_refresh_token');
     }];
 
-    credentialsServiceProvider.tokenRetriever = ['$http', 'WsService', function($http, WsService) {
+    angularJwtAuthToolsProvider.tokenRetriever = ['$http', 'WsService', function($http, WsService) {
         // We don't send Authorization headers
-        return $http.post(credentialsServiceProvider.urlLoginCheck, this, {ignoreAuthModule: true, skipAuthorization: true, headers: {'Content-Type': 'application/x-www-form-urlencoded'}, transformRequest: WsService.objectToURLEncoded});
+        return $http.post(angularJwtAuthToolsProvider.urlLoginCheck, this, {ignoreAuthModule: true, skipAuthorization: true, headers: {'Content-Type': 'application/x-www-form-urlencoded'}, transformRequest: WsService.objectToURLEncoded});
     }];
 
 });

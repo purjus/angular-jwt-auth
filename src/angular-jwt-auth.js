@@ -1,20 +1,23 @@
-angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials', 'angular-ws-service', 'LocalStorageModule'])
-.config(function($httpProvider, jwtInterceptorProvider, credentialsServiceProvider) {
+angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.tools', 'angular-ws-service', 'LocalStorageModule'])
+.config(function($httpProvider, jwtInterceptorProvider, angularJwtAuthToolsProvider) {
 
     jwtInterceptorProvider.tokenGetter = ['$injector', 'options', 'jwtHelper', '$http', 'WsService', function($injector, options, jwtHelper, $http, WsService) {
 
-        if ('.html' === options.url.substr(options.url.length - 5)) {
-            return null;
+        if (Array.isArray(angularJwtAuthToolsProvider.ignoredUrlExtensions) && angularJwtAuthToolsProvider.ignoredUrlExtensions.length) {
+            var splitUrl = options.url.split('.');
+            if (-1 !== angularJwtAuthToolsProvider.ignoredUrlExtensions.indexOf(splitUrl.pop())) {
+                return null;
+            }
         }
 
-        var existingToken = $injector.invoke(credentialsServiceProvider.existingTokenRetriever);
+        var existingToken = $injector.invoke(angularJwtAuthToolsProvider.existingTokenRetriever);
 
         // We got a expired token
         if (existingToken.token !== null && jwtHelper.isTokenExpired(existingToken.token)) {
 
             // This is a promise of a JWT token
             return $http({
-                url: credentialsServiceProvider.urlTokenRefresh,
+                url: angularJwtAuthToolsProvider.urlTokenRefresh,
                 // This makes it so that this request doesn't send the JWT
                 skipAuthorization: true,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -27,7 +30,7 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
             }).then(function(response) {
 
                 var data = response.data;
-                $injector.invoke(credentialsServiceProvider.tokenSaver, data);
+                $injector.invoke(angularJwtAuthToolsProvider.tokenSaver, data);
                 return data.token;
 
             }, function() {
@@ -47,18 +50,18 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
 
 })
 
-.run(function($injector, $rootScope, authService, credentialsService) {
+.run(function($injector, $rootScope, authService, angularJwtAuthTools) {
 
     $rootScope.$on('event:auth-loginRequired', function() {
 
-        var credentials = $injector.invoke(credentialsService.credentialsRetriever);
+        var credentials = $injector.invoke(angularJwtAuthTools.credentialsRetriever);
 
         if (credentials === null) {
             authService.loginCancelled();
             return;
         }
 
-        $injector.invoke(credentialsService.tokenRetriever, {_username: credentials.username, _password: credentials.password}).then(function(response) {
+        $injector.invoke(angularJwtAuthTools.tokenRetriever, {_username: credentials.username, _password: credentials.password}).then(function(response) {
 
             var data = response.data;
 
@@ -76,14 +79,14 @@ angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.credentials
 
 })
 
-.run(function($injector, $rootScope, credentialsService) {
+.run(function($injector, $rootScope, angularJwtAuthTools) {
 
     $rootScope.$on('event:auth-loginConfirmed', function(event, token) {
-        $injector.invoke(credentialsService.tokenSaver, token);
+        $injector.invoke(angularJwtAuthTools.tokenSaver, token);
     });
 
     $rootScope.$on('event:auth-loginCancelled', function() {
-        $injector.invoke(credentialsService.tokenRemover);
+        $injector.invoke(angularJwtAuthTools.tokenRemover);
     });
 
 });
