@@ -1,6 +1,12 @@
 # angular-jwt-auth
 Mix [auth0/angular-jwt](https://github.com/auth0/angular-jwt) & [witoldsz/angular-http-auth](https://github.com/witoldsz/angular-http-auth) to get automatic auth when response code is 401.
 
+> DEPRECATED as it's only compatible with AngularJS
+
+> NO TESTS
+
+---
+
 ## Documentation
 
 ### Installation
