@@ -1,3 +1,3 @@
-import 'angular-ws-service'
+require('angular-ws-service');
 module.exports = 'angular-ws-service';
 
