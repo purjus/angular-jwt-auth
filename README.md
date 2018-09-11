@@ -12,7 +12,7 @@ Mix [auth0/angular-jwt](https://github.com/auth0/angular-jwt) & [witoldsz/angula
 ### Installation
 
 ```sh
-bower install --save thibautjudepj/angular-jwt-auth
+npm i angular-jwt-auth-module
 ```
 
 ### Build
