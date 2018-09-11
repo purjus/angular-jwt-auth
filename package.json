@@ -1,6 +1,6 @@
 {
   "name": "angular-jwt-auth-module",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Mix auth0/angular-jwt & witoldsz/angular-http-auth to get automatic auth when response code is 401",
   "main": "index.js",
   "scripts": {
