@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/purjus/angular-jwt-auth.git"
+    "url": "git+https://github.com/purjus/angular-jwt-auth-module.git"
   },
   "keywords": [
     "angularjs",
@@ -18,9 +18,9 @@
   "author": "azzra",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/purjus/angular-jwt-auth/issues"
+    "url": "https://github.com/purjus/angular-jwt-auth-module/issues"
   },
-  "homepage": "https://github.com/purjus/angular-jwt-auth#readme",
+  "homepage": "https://github.com/purjus/angular-jwt-auth-module#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
