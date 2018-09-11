@@ -1,15 +1,14 @@
 {
-  "name": "angular-jwt-auth",
+  "name": "angular-jwt-auth-module",
   "version": "0.0.3",
   "description": "Mix auth0/angular-jwt & witoldsz/angular-http-auth to get automatic auth when response code is 401",
   "main": "index.js",
   "scripts": {
-    "install": "bower install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/azzra/angular-jwt-auth.git"
+    "url": "git+https://github.com/purjus/angular-jwt-auth.git"
   },
   "keywords": [
     "angularjs",
@@ -19,14 +18,20 @@
   "author": "azzra",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/azzra/angular-jwt-auth/issues"
+    "url": "https://github.com/purjus/angular-jwt-auth/issues"
   },
-  "homepage": "https://github.com/azzra/angular-jwt-auth#readme",
+  "homepage": "https://github.com/purjus/angular-jwt-auth#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-ng-annotate": "^2.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.5.3"
+  },
+  "dependencies" :{
+    "angular-http-auth": "^1.3.0",
+    "angular-local-storage": "^0.2.7",
+    "angular-jwt": "^0.1.9",
+    "angular-ws-service": "angular-ws-service"
   }
 }
