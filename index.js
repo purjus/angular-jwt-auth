@@ -1,3 +1,3 @@
-require('./dist/angular-ws-service.js');
+import 'angular-ws-service'
 module.exports = 'angular-ws-service';
 
