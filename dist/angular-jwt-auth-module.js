@@ -1,6 +1,6 @@
 (function() {
 
-    angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth.tools', 'angular-ws-service', 'LocalStorageModule'])
+    angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-module.tools', 'angular-ws-service', 'LocalStorageModule'])
         .config(["$httpProvider", "jwtInterceptorProvider", "angularJwtAuthToolsProvider", function($httpProvider, jwtInterceptorProvider, angularJwtAuthToolsProvider) {
 
             jwtInterceptorProvider.tokenGetter = ['$injector', 'options', 'jwtHelper', '$http', 'WsService', function($injector, options, jwtHelper, $http, WsService) {
@@ -94,7 +94,7 @@
 
         }]);
 
-    angular.module('angular-jwt-auth.tools', [])
+    angular.module('angular-jwt-auth-module.tools', [])
         .provider('angularJwtAuthTools', function() {
 
             this.urlLoginCheck = '/login_check';

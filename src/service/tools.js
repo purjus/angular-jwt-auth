@@ -1,4 +1,4 @@
-angular.module('angular-jwt-auth.tools', [])
+angular.module('angular-jwt-auth-module.tools', [])
 .provider('angularJwtAuthTools', function() {
 
     this.urlLoginCheck = '/login_check';

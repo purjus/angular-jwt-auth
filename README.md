@@ -1,4 +1,4 @@
-# angular-jwt-auth
+# angular-jwt-auth-module
 Mix [auth0/angular-jwt](https://github.com/auth0/angular-jwt) & [witoldsz/angular-http-auth](https://github.com/witoldsz/angular-http-auth) to get automatic auth when response code is 401.
 
 > DEPRECATED as it's only compatible with AngularJS
@@ -24,7 +24,7 @@ gulp build
 ### Set the login_check URL
 
 ```js
-angular.module('app', ['...', 'angular-jwt-auth', 'http-auth-interceptor'])....
+angular.module('app', ['...', 'angular-jwt-auth-module', 'http-auth-interceptor'])....
 ```
 
 ```js
@@ -39,7 +39,7 @@ angular.module('app', ['...', 'angular-jwt-auth', 'http-auth-interceptor'])....
 You can override the `angularJwtAuthTools` methods.
 
 ```js
-angular.module('angular-jwt-auth', ['angular-jwt', 'angular-jwt-auth.tools', 'LocalStorageModule'])
+angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-module.tools', 'LocalStorageModule'])
 .config(function($httpProvider, jwtInterceptorProvider, angularJwtAuthToolsProvider) {
 
   // Please note we're annotating the function so that the $injector works when the file is minified
