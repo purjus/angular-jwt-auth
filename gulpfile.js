@@ -4,7 +4,7 @@ var gulp = require('gulp'),
   rename = require('gulp-rename'),
   ngAnnotate = require('gulp-ng-annotate'),
   sourceFiles = [
-    'src/angular-jwt-auth-module.prefix',
+      'src/angular-jwt-auth-module.prefix',
     'src/*.js',
     'src/service/*.js',
     'src/angular-jwt-auth-module.suffix'
