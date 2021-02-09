@@ -1,4 +1,4 @@
-angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-module.tools', 'angular-ws-service', 'LocalStorageModule'])
+angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-module.tools', 'angular-ws-service'])
     .config(function($httpProvider, jwtInterceptorProvider, angularJwtAuthToolsProvider) {
 
         jwtInterceptorProvider.tokenGetter = ['$injector', 'options', 'jwtHelper', '$http', 'WsService', function($injector, options, jwtHelper, $http, WsService) {

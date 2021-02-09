@@ -3,6 +3,7 @@ angular.module('angular-jwt-auth-module.tools', [])
 
     this.urlLoginCheck = '/login_check';
     this.urlTokenRefresh = '/token/refresh';
+    this.prefix = 'rrg.';
 
     /**
      * Get the login & password.
@@ -54,33 +55,34 @@ angular.module('angular-jwt-auth-module.tools', [])
 
 .config(function(angularJwtAuthToolsProvider) {
 
-    angularJwtAuthToolsProvider.credentialsRetriever = ['localStorageService', function(localStorageService) {
+    angularJwtAuthToolsProvider.credentialsRetriever = function() {
 
-        if (localStorage.getItem('auth.username') === null || localStorage.getItem('auth.password') === null) {
+        if (localStorage.getItem(this.prefix + 'auth.username') === null || localStorage.getItem(this.prefix + 'auth.password') === null) {
             return null;
         }
 
         return {
-            username: localStorageService.get('auth.username'),
-            password: localStorageService.get('auth.password')
+            username: localStorage.getItem(this.prefix + 'auth.username'),
+            password: localStorage.getItem(this.prefix + 'auth.password')
         };
-    }];
+    };
 
-    angularJwtAuthToolsProvider.tokenSaver = ['localStorageService', function(localStorageService) {
-        localStorageService.set('auth.jwt_token', this.token);
-        localStorageService.set('auth.jwt_refresh_token', this.refresh_token);
-    }];
+    angularJwtAuthToolsProvider.tokenSaver = function() {
+        localStorage.setItem(this.prefix + 'auth.jwt_token', this.token);
+        localStorage.setItem(this.prefix + 'auth.jwt_refresh_token', this.refresh_token);
+    };
 
-    angularJwtAuthToolsProvider.existingTokenRetriever = ['localStorageService', function(localStorageService) {
+    angularJwtAuthToolsProvider.existingTokenRetriever = function() {
         return {
-            token: localStorageService.get('auth.jwt_token'),
-            refreshToken: localStorageService.get('auth.jwt_refresh_token')
+            token: localStorage.getItem(this.prefix + 'auth.jwt_token'),
+            refreshToken: localStorage.getItem(this.prefix + 'auth.jwt_refresh_token')
         };
-    }];
+    };
 
-    angularJwtAuthToolsProvider.tokenRemover = ['localStorageService', function(localStorageService) {
-        localStorageService.remove('auth.jwt_token', 'auth.jwt_refresh_token');
-    }];
+    angularJwtAuthToolsProvider.tokenRemover = function() {
+        localStorage.removeItem(this.prefix + 'auth.jwt_token');
+        localStorage.removeItem(this.prefix + 'auth.jwt_refresh_token');
+    };
 
     angularJwtAuthToolsProvider.tokenRetriever = ['$http', 'WsService', function($http, WsService) {
         // We don't send Authorization headers
