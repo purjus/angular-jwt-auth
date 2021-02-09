@@ -80,8 +80,8 @@ angular.module('angular-jwt-auth-module.tools', [])
     };
 
     angularJwtAuthToolsProvider.tokenRemover = function() {
-        localStorage.removeItem('auth.jwt_token');
-        localStorage.removeItem('auth.jwt_refresh_token');
+        localStorage.removeItem(this.prefix + 'auth.jwt_token');
+        localStorage.removeItem(this.prefix + 'auth.jwt_refresh_token');
     };
 
     angularJwtAuthToolsProvider.tokenRetriever = ['$http', 'WsService', function($http, WsService) {
