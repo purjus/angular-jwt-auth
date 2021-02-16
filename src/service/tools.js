@@ -49,21 +49,21 @@ angular.module('angular-jwt-auth-module.tools', [])
 
     angularJwtAuthToolsProvider.tokenSaver = function() {
         console.log("tokenSaverinvoke");
-        localStorage.setItem(this.prefix + 'auth.jwt_token', this.token);
-        localStorage.setItem(this.prefix + 'auth.jwt_refresh_token', this.refresh_token);
+        localStorage.setItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token', this.token);
+        localStorage.setItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token', this.refresh_token);
     };
 
     angularJwtAuthToolsProvider.existingTokenRetriever = function() {
-        console.log("existingtokeninvoke");
+        console.log("existingtokeninvoke", localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token'), localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token'));
         return {
-            token: localStorage.getItem(this.prefix + 'auth.jwt_token'),
-            refreshToken: localStorage.getItem(this.prefix + 'auth.jwt_refresh_token')
+            token: localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token'),
+            refreshToken: localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token')
         };
     };
 
     angularJwtAuthToolsProvider.tokenRemover = function() {
-        localStorage.removeItem(this.prefix + 'auth.jwt_token');
-        localStorage.removeItem(this.prefix + 'auth.jwt_refresh_token');
+        localStorage.removeItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token');
+        localStorage.removeItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token');
     };
 
     angularJwtAuthToolsProvider.tokenRetriever = ['$http', 'WsService', function($http, WsService) {
