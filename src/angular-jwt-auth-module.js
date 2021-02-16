@@ -11,6 +11,7 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
             }
 
             var existingToken = $injector.invoke(angularJwtAuthToolsProvider.existingTokenRetriever);
+            console.log("existingtoken", existingToken);
 
             // We got a expired token
             if (existingToken.token !== null && jwtHelper.isTokenExpired(existingToken.token)) {
@@ -30,6 +31,7 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
                 }).then(function(response) {
 
                     var data = response.data;
+                    console.log("new token", response.data);
                     $injector.invoke(angularJwtAuthToolsProvider.tokenSaver, data);
                     return data.token;
 
@@ -47,35 +49,6 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');
-
-    })
-
-    .run(function($injector, $rootScope, authService, angularJwtAuthTools) {
-
-        $rootScope.$on('event:auth-loginRequired', function() {
-
-            var credentials = $injector.invoke(angularJwtAuthTools.credentialsRetriever);
-
-            if (credentials === null) {
-                authService.loginCancelled();
-                return;
-            }
-
-            $injector.invoke(angularJwtAuthTools.tokenRetriever, {_username: credentials.username, _password: credentials.password}).then(function(response) {
-
-                var data = response.data;
-
-                // Add Authorization header to current requests
-                authService.loginConfirmed(data, function(config) {
-                    config.headers.Authorization = 'Bearer ' + data.token;
-                    return config ;
-                });
-
-            }, function() {
-                authService.loginCancelled();
-            });
-
-        });
 
     })
 

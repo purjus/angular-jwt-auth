@@ -13,6 +13,7 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
             }
 
             var existingToken = $injector.invoke(angularJwtAuthToolsProvider.existingTokenRetriever);
+            console.log("existingtoken", existingToken);
 
             // We got a expired token
             if (existingToken.token !== null && jwtHelper.isTokenExpired(existingToken.token)) {
@@ -32,6 +33,7 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
                 }).then(function(response) {
 
                     var data = response.data;
+                    console.log("new token", response.data);
                     $injector.invoke(angularJwtAuthToolsProvider.tokenSaver, data);
                     return data.token;
 
@@ -49,35 +51,6 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
         }];
 
         $httpProvider.interceptors.push('jwtInterceptor');
-
-    }])
-
-    .run(["$injector", "$rootScope", "authService", "angularJwtAuthTools", function($injector, $rootScope, authService, angularJwtAuthTools) {
-
-        $rootScope.$on('event:auth-loginRequired', function() {
-
-            var credentials = $injector.invoke(angularJwtAuthTools.credentialsRetriever);
-
-            if (credentials === null) {
-                authService.loginCancelled();
-                return;
-            }
-
-            $injector.invoke(angularJwtAuthTools.tokenRetriever, {_username: credentials.username, _password: credentials.password}).then(function(response) {
-
-                var data = response.data;
-
-                // Add Authorization header to current requests
-                authService.loginConfirmed(data, function(config) {
-                    config.headers.Authorization = 'Bearer ' + data.token;
-                    return config ;
-                });
-
-            }, function() {
-                authService.loginCancelled();
-            });
-
-        });
 
     }])
 
@@ -99,14 +72,6 @@ angular.module('angular-jwt-auth-module.tools', [])
     this.urlLoginCheck = '/login_check';
     this.urlTokenRefresh = '/token/refresh';
     this.prefix = 'rrg.';
-
-    /**
-     * Get the login & password.
-     *
-     * @return object
-     */
-    this.credentialsRetriever = function() { };
-
 
     /**
      * Get the current local tokens.
@@ -150,24 +115,14 @@ angular.module('angular-jwt-auth-module.tools', [])
 
 .config(["angularJwtAuthToolsProvider", function(angularJwtAuthToolsProvider) {
 
-    angularJwtAuthToolsProvider.credentialsRetriever = function() {
-
-        if (localStorage.getItem(this.prefix + 'auth.username') === null || localStorage.getItem(this.prefix + 'auth.password') === null) {
-            return null;
-        }
-
-        return {
-            username: localStorage.getItem(this.prefix + 'auth.username'),
-            password: localStorage.getItem(this.prefix + 'auth.password')
-        };
-    };
-
     angularJwtAuthToolsProvider.tokenSaver = function() {
+        console.log("tokenSaverinvoke");
         localStorage.setItem(this.prefix + 'auth.jwt_token', this.token);
         localStorage.setItem(this.prefix + 'auth.jwt_refresh_token', this.refresh_token);
     };
 
     angularJwtAuthToolsProvider.existingTokenRetriever = function() {
+        console.log("existingtokeninvoke");
         return {
             token: localStorage.getItem(this.prefix + 'auth.jwt_token'),
             refreshToken: localStorage.getItem(this.prefix + 'auth.jwt_refresh_token')

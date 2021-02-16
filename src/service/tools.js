@@ -6,14 +6,6 @@ angular.module('angular-jwt-auth-module.tools', [])
     this.prefix = 'rrg.';
 
     /**
-     * Get the login & password.
-     *
-     * @return object
-     */
-    this.credentialsRetriever = function() { };
-
-
-    /**
      * Get the current local tokens.
      *
      * @return object
@@ -55,24 +47,14 @@ angular.module('angular-jwt-auth-module.tools', [])
 
 .config(function(angularJwtAuthToolsProvider) {
 
-    angularJwtAuthToolsProvider.credentialsRetriever = function() {
-
-        if (localStorage.getItem(this.prefix + 'auth.username') === null || localStorage.getItem(this.prefix + 'auth.password') === null) {
-            return null;
-        }
-
-        return {
-            username: localStorage.getItem(this.prefix + 'auth.username'),
-            password: localStorage.getItem(this.prefix + 'auth.password')
-        };
-    };
-
     angularJwtAuthToolsProvider.tokenSaver = function() {
+        console.log("tokenSaverinvoke");
         localStorage.setItem(this.prefix + 'auth.jwt_token', this.token);
         localStorage.setItem(this.prefix + 'auth.jwt_refresh_token', this.refresh_token);
     };
 
     angularJwtAuthToolsProvider.existingTokenRetriever = function() {
+        console.log("existingtokeninvoke");
         return {
             token: localStorage.getItem(this.prefix + 'auth.jwt_token'),
             refreshToken: localStorage.getItem(this.prefix + 'auth.jwt_refresh_token')
