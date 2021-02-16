@@ -13,7 +13,6 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
             }
 
             var existingToken = $injector.invoke(angularJwtAuthToolsProvider.existingTokenRetriever);
-            console.log("existingtoken", existingToken);
 
             // We got a expired token
             if (existingToken.token !== null && jwtHelper.isTokenExpired(existingToken.token)) {
@@ -33,7 +32,6 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
                 }).then(function(response) {
 
                     var data = response.data;
-                    console.log("new token", response.data);
                     $injector.invoke(angularJwtAuthToolsProvider.tokenSaver, data);
                     return data.token;
 
@@ -116,13 +114,11 @@ angular.module('angular-jwt-auth-module.tools', [])
 .config(["angularJwtAuthToolsProvider", function(angularJwtAuthToolsProvider) {
 
     angularJwtAuthToolsProvider.tokenSaver = function() {
-        console.log("tokenSaverinvoke");
         localStorage.setItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token', this.token);
         localStorage.setItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token', this.refresh_token);
     };
 
     angularJwtAuthToolsProvider.existingTokenRetriever = function() {
-        console.log("existingtokeninvoke", localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token'), localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token'));
         return {
             token: localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token'),
             refreshToken: localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token')

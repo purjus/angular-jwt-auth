@@ -11,7 +11,6 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
             }
 
             var existingToken = $injector.invoke(angularJwtAuthToolsProvider.existingTokenRetriever);
-            console.log("existingtoken", existingToken);
 
             // We got a expired token
             if (existingToken.token !== null && jwtHelper.isTokenExpired(existingToken.token)) {
@@ -31,7 +30,6 @@ angular.module('angular-jwt-auth-module', ['angular-jwt', 'angular-jwt-auth-modu
                 }).then(function(response) {
 
                     var data = response.data;
-                    console.log("new token", response.data);
                     $injector.invoke(angularJwtAuthToolsProvider.tokenSaver, data);
                     return data.token;
 

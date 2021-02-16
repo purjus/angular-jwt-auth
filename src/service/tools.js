@@ -48,13 +48,11 @@ angular.module('angular-jwt-auth-module.tools', [])
 .config(function(angularJwtAuthToolsProvider) {
 
     angularJwtAuthToolsProvider.tokenSaver = function() {
-        console.log("tokenSaverinvoke");
         localStorage.setItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token', this.token);
         localStorage.setItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token', this.refresh_token);
     };
 
     angularJwtAuthToolsProvider.existingTokenRetriever = function() {
-        console.log("existingtokeninvoke", localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token'), localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token'));
         return {
             token: localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_token'),
             refreshToken: localStorage.getItem(angularJwtAuthToolsProvider.prefix + 'auth.jwt_refresh_token')
